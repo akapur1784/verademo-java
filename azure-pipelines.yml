@@ -21,18 +21,3 @@ steps:
     testResultsFiles: '**/surefire-reports/TEST-*.xml'
     goals: 'package'
 
-
-    - task: Veracode@3
-  inputs:
-    ConnectionDetailsSelection: 'Credentials'
-    apiId: '1afb0d712cb44916842de807df85c10a'
-    apiKey: '463ae6873fd4339aaa0a55405a52ea2daef0f605e66deb5a4105601824c686c2c93a64c9235e1ba617127742cb6f7d30e98f5bad66411c226886d75343f7bff5'
-    veracodeAppProfile: 'verademo-java'
-    version: '$(build.buildNumber)-$$(Date:yyyyMMdd)'
-    filepath: '$(build.artifactstagingdirectory)'
-    createSandBox: false
-    createProfile: false
-    failTheBuildIfVeracodeScanDidNotInitiate: false
-    scanStatusCheckInterval: '60'
-    importResults: false
-    failBuildOnPolicyFail: false
