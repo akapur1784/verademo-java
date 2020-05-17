@@ -21,6 +21,19 @@ steps:
     testResultsFiles: '**/surefire-reports/TEST-*.xml'
     goals: 'package'
 
+# Copy files
+# Copy files from a source folder to a target folder using patterns matching file paths (not folder paths)
+- task: CopyFiles@2
+  inputs:
+    #sourceFolder: # Optional
+    #contents: '**' 
+    targetFolder: 
+    #cleanTargetFolder: false # Optional
+    #overWrite: false # Optional
+    #flattenFolders: false # Optional
+    #preserveTimestamp: false # Optional
+
+#Veracode Upload&Scan task
 - task: Veracode@3
   inputs:
     ConnectionDetailsSelection: 'Credentials'
@@ -28,7 +41,7 @@ steps:
     apiKey: '463ae6873fd4339aaa0a55405a52ea2daef0f605e66deb5a4105601824c686c2c93a64c9235e1ba617127742cb6f7d30e98f5bad66411c226886d75343f7bff5'
     veracodeAppProfile: 'Verademo-java'
     version: '$(build.buildNumber)'
-    filepath: '$(build.artifactstagingdirectory)/*.war'
+    filepath: '**/**.war'
     createSandBox: false
     createProfile: false
     failTheBuildIfVeracodeScanDidNotInitiate: false
@@ -37,6 +50,5 @@ steps:
     failBuildOnPolicyFail: false
 
 
-Users/runner/runners/2.168.2/work/1/s/target/verademo.war
 
 
