@@ -1,0 +1,43 @@
+# Maven
+# Build your Java project and run tests with Apache Maven.
+# Add steps that analyze code, save build artifacts, deploy, and more:
+# https://docs.microsoft.com/azure/devops/pipelines/languages/java
+
+trigger:
+- master
+
+pool:
+  vmImage: 'macOS-10.14'
+
+steps:
+- task: Maven@3
+  inputs:
+    mavenPomFile: 'pom.xml'
+    mavenOptions: '-Xmx3072m'
+    javaHomeOption: 'JDKVersion'
+    jdkVersionOption: '1.8'
+    jdkArchitectureOption: 'x64'
+    publishJUnitResults: true
+    testResultsFiles: '**/surefire-reports/TEST-*.xml'
+    goals: 'package'
+
+
+#Veracode Upload&Scan task
+- task: Veracode@3
+  inputs:
+    ConnectionDetailsSelection: 'Credentials'
+    apiId: '1afb0d712cb44916842de807df85c10a'
+    apiKey: '463ae6873fd4339aaa0a55405a52ea2daef0f605e66deb5a4105601824c686c2c93a64c9235e1ba617127742cb6f7d30e98f5bad66411c226886d75343f7bff5'
+    veracodeAppProfile: 'verademo-java'
+    version: '$(build.buildNumber)'
+    filepath: '$(Build.Repository.LocalPath)/target/verademo.war'
+    createSandBox: false
+    createProfile: false
+    failTheBuildIfVeracodeScanDidNotInitiate: false
+    scanStatusCheckInterval: '60'
+    importResults: true
+    failBuildOnPolicyFail: false
+
+
+
+
