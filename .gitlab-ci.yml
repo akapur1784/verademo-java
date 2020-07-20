@@ -1,4 +1,4 @@
-yml
+
 # image must have JDK8+, gradle, curl, unzip
 image: maven:3.3.9-jdk-8
    
@@ -10,12 +10,10 @@ stages:
 build_job:
   stage: build
   script:
-    - maven clean verify
+    - mvn -B package --file pom.xml
   artifacts:
-  name: ${CI_PROJECT_NAME}_${CI_COMMIT_REF_NAME}_${CI_COMMIT_SHA}_build
-    paths:
-    -  build/
-    expire_in: 1 week
+   name: ${CI_PROJECT_NAME}_${CI_COMMIT_REF_NAME}_${CI_COMMIT_SHA}_build
+
 
 pipeline scan:
   stage: scan
@@ -33,7 +31,7 @@ pipeline scan:
     - java -jar pipeline-scan.jar
       --veracode_api_id "${VERACODE_API_ID}"
       --veracode_api_key "${VERACODE_API_SECRET}"
-      --file "build/libs/sample.jar"
+      --file "build/libs/verademo.war"
       --project_name "${CI_PROJECT_PATH}"
       --project_url "${CI_REPOSITORY_URL}"
       --project_ref "${CI_COMMIT_REF_NAME}"
