@@ -24,13 +24,13 @@ jobs:
     - name: Build with Maven
       run: mvn -B package --file pom.xml
 
+    - name: Export SRCCLR API Token 
+      run: export SRCCLR_API_TOKEN='eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTAyNzkxLCJleHAiOjE1ODk1NjIxMTgsImF1dGhvcml0aWVzIjoiQUdFTlQiLCJqdGkiOiI0YTNjZGM5YS03MDU0LTQ3NGUtOTNlMS1jOTNjY2Q3OWViYzciLCJjbGllbnRfaWQiOiIiLCJzY29wZSI6W119.G39S6EpZlcCcfFqQ-m3rEf7K9ESST7dJFAKY9rWWkRO7PFRl8k-Yvd9wTpWpHPW3ljWdgO-tu7AVOc45qkutN4l05C6pZ1O9PjLhFJfg8Yxm1YseZZXO_Q6qca5bure6cLXTM-npRwRVV0-q-I9VIqimpgdNbXMQ_Nek9iTPcu4'
     - name: SCA Agent Scan (OSS)
       uses: wei/curl@master
       with:
           args: -sSL https://download.sourceclear.com/ci.sh | sh -s scan --debug --allow-dirty
-          env: SRCCLR_API_TOKEN='eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTAyNzkxLCJleHAiOjE1ODk1NjIxMTgsImF1dGhvcml0aWVzIjoiQUdFTlQiLCJqdGkiOiI0YTNjZGM5YS03MDU0LTQ3NGUtOTNlMS1jOTNjY2Q3OWViYzciLCJjbGllbnRfaWQiOiIiLCJzY29wZSI6W119.G39S6EpZlcCcfFqQ-m3rEf7K9ESST7dJFAKY9rWWkRO7PFRl8k-Yvd9wTpWpHPW3ljWdgO-tu7AVOc45qkutN4l05C6pZ1O9PjLhFJfg8Yxm1YseZZXO_Q6qca5bure6cLXTM-npRwRVV0-q-I9VIqimpgdNbXMQ_Nek9iTPcu4'
-    
- 
+          
     - name: Download the Veracode Pipeline Scanner
       uses: wei/curl@master
       with:
