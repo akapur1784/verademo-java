@@ -34,7 +34,6 @@ jobs:
       run: java -Dpipeline.debug=true -jar pipeline-scan.jar --veracode_api_id "${{secrets.VERACODE_API_ID}}" --veracode_api_key "${{secrets.VERACODE_API_KEY}}" --file "target/verademo.war" --fail_on_severity="Very High, High"
     
     - name: SCA Agent Scan (OSS)
-      uses: actions/checkout@v2
       run: export SRCCLR_API_TOKEN = "${{secrets.SRCCLR_API_TOKEN}}"
            curl -sSL https://download.sourceclear.com/ci.sh | sh -s scan --debug --allow-dirty
 
