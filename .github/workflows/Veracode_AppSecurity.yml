@@ -30,7 +30,7 @@ jobs:
     - name: SCA Agent Scan (OSS)
       uses: wei/curl@master
       with:
-          args: -sSL https://download.sourceclear.com/ci.sh | sh -s scan --debug --allow-dirty
+          args: -sSL https://download.sourceclear.com/ci.sh | sh -s scan --debug --allow-dirty --scan-collector=maven
           
     - name: Download the Veracode Pipeline Scanner
       uses: wei/curl@master
