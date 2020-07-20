@@ -31,7 +31,11 @@ jobs:
       uses: wei/curl@master
       with:
           args: -sSL https://download.sourceclear.com/ci.sh | sh -s scan --debug --allow-dirty --scan-collector "maven"
-          
+
+    - name: SRCCLR test
+      if: always()
+      run: srcclr test --maven 
+
     - name: Download the Veracode Pipeline Scanner
       uses: wei/curl@master
       with:
