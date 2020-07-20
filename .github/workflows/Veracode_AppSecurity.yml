@@ -1,7 +1,7 @@
 # This workflow will build a Java project with Maven
 # For more information see: https://help.github.com/actions/language-and-framework-guides/building-and-testing-java-with-maven
 
-name: Build and Policy Scan
+name: Build and Veracode App Security
 
 on:
   push:
@@ -10,7 +10,7 @@ on:
     branches: [ master ]
 
 jobs:
-  build:
+  AppSecurity:
 
     runs-on: ubuntu-latest
 
@@ -20,13 +20,27 @@ jobs:
       uses: actions/setup-java@v1
       with:
         java-version: 1.8
+    
     - name: Build with Maven
       run: mvn -B package --file pom.xml
  
+    - name: Download the Veracode Pipeline Scanner
+      uses: wei/curl@master
+      with:
+          args: -O https://downloads.veracode.com/securityscan/pipeline-scan-LATEST.zip
+    - name: Unzip the Pipeline Scanner
+      run: unzip pipeline-scan-LATEST.zip
+    - name: Run Pipeline Scanner
+      run: java -Dpipeline.debug=true -jar pipeline-scan.jar --veracode_api_id "${{secrets.VERACODE_API_ID}}" --veracode_api_key "${{secrets.VERACODE_API_KEY}}" --file "target/verademo.war" --fail_on_severity="Very High, High"
+    
+    - name: SCA Agent Scan (OSS)
+      uses: actions/checkout@v2
+      run: export SRCCLR_API_TOKEN = "${{secrets.SRCCLR_API_TOKEN}}"
+           curl -sSL https://download.sourceclear.com/ci.sh | sh -s scan --debug --allow-dirty
 
-    - name: download Veracode scan
+    - name: Download Veracode Policy Scan
       run: VERACODE_WRAPPER_VERSION=$(curl -sS "https://search.maven.org/solrsearch/select?q=g:%22com.veracode.vosp.api.wrappers%22&rows=20&wt=json" | jq -r '.response.docs[0].latestVersion') && curl -sS -o veracode-wrapper.jar "https://repo1.maven.org/maven2/com/veracode/vosp/api/wrappers/vosp-api-wrappers-java/${VERACODE_WRAPPER_VERSION}/vosp-api-wrappers-java-${VERACODE_WRAPPER_VERSION}.jar"
-    - name: run scan
+    - name: Run Policy Scan
       run: java -jar veracode-wrapper.jar -vid ${{secrets.VERACODE_API_ID}} -vkey ${{secrets.VERACODE_API_KEY}}
         -action uploadandscan -appname "verademo-java" -filepath "target/verademo.war"
         -createprofile false -version "commit $GITHUB_SHA_SHORT workflow $GITHUB_WORKFLOW run $GITHUB_RUN_ID"
