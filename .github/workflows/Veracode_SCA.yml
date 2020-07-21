@@ -10,7 +10,7 @@ on:
     branches: [ master ]
 
 jobs:
-  AppSecurity:
+  VeracodeSCA:
 
     runs-on: ubuntu-latest
 
