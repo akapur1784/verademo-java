@@ -27,7 +27,7 @@ jobs:
         java-version: 1.8
       
     - name: Build with Maven
-      run: mvn -B package --file pom.xml
+      run: mvn compile
 
     - name: Download the Veracode Pipeline Scanner
       uses: wei/curl@master
