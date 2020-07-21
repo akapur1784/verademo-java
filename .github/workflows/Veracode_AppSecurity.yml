@@ -24,19 +24,19 @@ jobs:
     - name: Build with Maven
       run: mvn -B package --file pom.xml
 
-    - name: echo maven path
-      run: echo $M2_HOME
+    - name: echo path
+      run: echo $PATH
 
     - name: Export SRCCLR API Token 
       run: echo ::set-env name=SRCCLR_API_TOKEN::eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTYyNDE0LCJleHAiOjE1OTUyNTM4OTEsImF1dGhvcml0aWVzIjoiQUdFTlQiLCJqdGkiOiIyMjg1ODkzNS03NzgwLTQwZDgtYjY0NS0wNTE5MTVmMzQ4ZWEiLCJjbGllbnRfaWQiOiIiLCJzY29wZSI6W119.FSh0Z-bvlyPBtHzSYMghsgDtAV0p0HAvaPpJQZauFmQMT2fM8H_xBKFL9x0NhygsfnF8WluXc3jGk-nAOSjkkPlyFHIXL3eoyXy0wMyLzzc-uSPy0AAYnoF62GSCX57MCDLtT2NRZcg2ez5vDZ-hpe8JJyYIZDhicSjJ631a_qU
            
     - name: Custom maven command
-      run: echo ::set-env name=SRCCLR_CUSTOM_MAVEN_EXEC::/usr/share/apache-maven-3.6.3
+      run: echo ::set-env name=SRCCLR_CUSTOM_MAVEN_EXEC::/opt/maven
 
     - name: SCA Agent Scan (OSS)
       uses: wei/curl@master
       with:
-          args: -sSL https://download.sourceclear.com/ci.sh | sh -s scan --debug --allow-dirty --quick
+          args: -sSL https://download.sourceclear.com/ci.sh | sh -s scan --debug --allow-dirty
 
     - name: Download the Veracode Pipeline Scanner
       uses: wei/curl@master
@@ -45,7 +45,7 @@ jobs:
     - name: Unzip the Pipeline Scanner
       run: unzip pipeline-scan-LATEST.zip
     - name: Run Pipeline Scanner
-      run: java -Dpipeline.debug=true -jar pipeline-scan.jar --veracode_api_id "${{secrets.VERACODE_API_ID}}" --veracode_api_key "${{secrets.VERACODE_API_KEY}}" --file "target/verademo.war" --fail_on_severity="Very High, High" --issue_details "true"
+      run: java -Dpipeline.debug=true -jar pipeline-scan.jar --veracode_api_id "${{secrets.VERACODE_API_ID}}" --veracode_api_key "${{secrets.VERACODE_API_KEY}}" --file "target/verademo.war" --fail_on_severity="Very High, High" 
     
     - name: Download Veracode Policy Scan
       run: VERACODE_WRAPPER_VERSION=$(curl -sS "https://search.maven.org/solrsearch/select?q=g:%22com.veracode.vosp.api.wrappers%22&rows=20&wt=json" | jq -r '.response.docs[0].latestVersion') && curl -sS -o veracode-wrapper.jar "https://repo1.maven.org/maven2/com/veracode/vosp/api/wrappers/vosp-api-wrappers-java/${VERACODE_WRAPPER_VERSION}/vosp-api-wrappers-java-${VERACODE_WRAPPER_VERSION}.jar"
