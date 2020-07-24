@@ -23,7 +23,7 @@ pipelines:
        script:
         - curl -O https://downloads.veracode.com/securityscan/pipeline-scan-LATEST.zip
         - unzip pipeline-scan-LATEST.zip
-        - java -Dpipeline.debug=true -jar pipeline-scan.jar --veracode_api_id "VERACODE_API_ID" --veracode_api_key "$VERACODE_API_KEY" --file "target/verademo.war" --fail_on_severity="Very High, High" 
+        - java -Dpipeline.debug=true -jar pipeline-scan.jar --veracode_api_id "$VERACODE_API_ID" --veracode_api_key "$VERACODE_API_KEY" --file "target/verademo.war" --fail_on_severity="Very High, High" 
 
 
 
