@@ -34,4 +34,4 @@ pipelines:
          - java -jar veracode-wrapper.jar -vid $VERACODE_API_ID -vkey $VERACODE_API_KEY
                         -action uploadandscan -appname "verademo-java" -filepath "target/verademo.war"
                         -createprofile false -version "commit $GITHUB_SHA_SHORT step $BITBUCKET_STEP_UUID run $BITBUCKET_PIPELINE_UUID"
-                        -sandboxname "Bitbucket" -createsandbox true -autoscan true
+                        -sandboxname "Bitbucket" -createsandbox false -autoscan true
