@@ -26,11 +26,7 @@ jobs:
     - name: Build with Maven
       run:  mvn -B package --file pom.xml
 
-    - name: Upload Binaries
-      uses: actions/upload-artifact@v1
-      with:
-          name: warfile
-          path: target/verademo.war
+  
 
     - name: Download the Veracode Pipeline Scanner
       uses: wei/curl@master
@@ -72,10 +68,7 @@ jobs:
       with:
        name: baseline
     
-    - name: download warfile
-      uses: actions/download-artifact@v1
-      with:
-       name: warfile
+    
     
     - name: Scan with baseline
       run: java -Dpipeline.debug=true -jar pipeline-scan.jar --veracode_api_id "${{secrets.VERACODE_API_ID}}" --veracode_api_key "${{secrets.VERACODE_API_KEY}}" --file "target/verademo.war" --baseline_file "baseline/baseline.json"
