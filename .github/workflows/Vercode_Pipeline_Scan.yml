@@ -10,37 +10,35 @@ on:
     branches: [ master ]
 
 jobs:
-  Baseline:
+  Maven_Build:
 
     runs-on: ubuntu-latest
 
     steps:
-  
     - uses: actions/checkout@v2
-    
     - name: Set up JDK 1.8
       uses: actions/setup-java@v1
       with: 
         java-version: 1.8
-      
     - name: Build with Maven
       run:  mvn -B package --file pom.xml
-    
     - run: mkdir staging && cp target/*.war staging
     - uses: actions/upload-artifact@v2
       with:
         name: Package
         path: staging
- 
+  
+  Baseline:
 
+    runs-on: ubuntu-latest
+
+    steps:
     - name: Download the Veracode Pipeline Scanner
       uses: wei/curl@master
       with:
           args: -O https://downloads.veracode.com/securityscan/pipeline-scan-LATEST.zip
-    
     - name: Unzip the Pipeline Scanner
       run: unzip pipeline-scan-LATEST.zip
-    
     - name: Create Baseline
       run: java -Dpipeline.debug=true -jar pipeline-scan.jar --veracode_api_id "${{secrets.VERACODE_API_ID}}" --veracode_api_key "${{secrets.VERACODE_API_KEY}}" --file "target/verademo.war" --json_output_file="baseline.json" || true
     - name: Upload Baseline
@@ -54,33 +52,25 @@ jobs:
     runs-on: ubuntu-latest
     needs: Baseline
     steps:  
-    
-    
     - name: Set up JDK 1.8
       uses: actions/setup-java@v1
       with:
           java-version: 1.8
-    
     - name: Download the Veracode Pipeline Scanner
       uses: wei/curl@master
       with:
           args: -O https://downloads.veracode.com/securityscan/pipeline-scan-LATEST.zip
-   
     - name: Unzip the Pipeline Scanner
       run: unzip pipeline-scan-LATEST.zip
-    
     - name: download baseline
       uses: actions/download-artifact@v1
       with:
        name: baseline
-    
     - name: download warfile
       uses: actions/download-artifact@v1
       with:
        name: Package
-    
-    
     - name: Scan with baseline
-      run: java -Dpipeline.debug=true -jar pipeline-scan.jar --veracode_api_id "${{secrets.VERACODE_API_ID}}" --veracode_api_key "${{secrets.VERACODE_API_KEY}}" --file "staging/verademo.war" --baseline_file "baseline/baseline.json"
+      run: java -Dpipeline.debug=true -jar pipeline-scan.jar --veracode_api_id "${{secrets.VERACODE_API_ID}}" --veracode_api_key "${{secrets.VERACODE_API_KEY}}" --file "Package/verademo.war" --baseline_file "baseline/baseline.json"
  
   
