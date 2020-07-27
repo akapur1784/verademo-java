@@ -27,7 +27,7 @@ jobs:
     - name: Upload Baseline
       uses: actions/upload-artifact@v1
       with:
-          name: build
+          name: warfile
           path: target/verademo.war
   
   VeraodePipelineBaseline:
@@ -42,7 +42,7 @@ jobs:
     - name: download baseline
       uses: actions/download-artifact@v1
       with:
-       name: build
+       name: warfile
     - name: Download the Veracode Pipeline Scanner
       uses: wei/curl@master
       with:
@@ -50,7 +50,7 @@ jobs:
     - name: Unzip the Pipeline Scanner
       run: unzip pipeline-scan-LATEST.zip
     - name: Run Pipeline Scanner
-      run: java -Dpipeline.debug=true -jar pipeline-scan.jar --veracode_api_id "${{secrets.VERACODE_API_ID}}" --veracode_api_key "${{secrets.VERACODE_API_KEY}}" --file "example.jar" --json_output_file="baseline.json" || true
+      run: java -Dpipeline.debug=true -jar pipeline-scan.jar --veracode_api_id "${{secrets.VERACODE_API_ID}}" --veracode_api_key "${{secrets.VERACODE_API_KEY}}" --file "target/verademo.war" --json_output_file="baseline.json" || true
     - name: Upload Baseline
       uses: actions/upload-artifact@v1
       with:
@@ -77,7 +77,7 @@ jobs:
       with:
        name: baseline
     - name: Scan with baseline
-      run: java -Dpipeline.debug=true -jar pipeline-scan.jar --veracode_api_id "${{secrets.VERACODE_API_ID}}" --veracode_api_key "${{secrets.VERACODE_API_KEY}}" --file "example.jar" --baseline_file "baseline/baseline.json"
+      run: java -Dpipeline.debug=true -jar pipeline-scan.jar --veracode_api_id "${{secrets.VERACODE_API_ID}}" --veracode_api_key "${{secrets.VERACODE_API_KEY}}" --file "target/verademo.war" --baseline_file "baseline/baseline.json"
  
   VeracodePolicyScan:
 
@@ -90,6 +90,10 @@ jobs:
       uses: actions/setup-java@v1
       with: 
         java-version: 1.8
+    - name: download baseline
+      uses: actions/download-artifact@v1
+      with:
+       name: warfile
     - name: Download Veracode Policy Scan
       run: VERACODE_WRAPPER_VERSION=$(curl -sS "https://search.maven.org/solrsearch/select?q=g:%22com.veracode.vosp.api.wrappers%22&rows=20&wt=json" | jq -r '.response.docs[0].latestVersion') && curl -sS -o veracode-wrapper.jar "https://repo1.maven.org/maven2/com/veracode/vosp/api/wrappers/vosp-api-wrappers-java/${VERACODE_WRAPPER_VERSION}/vosp-api-wrappers-java-${VERACODE_WRAPPER_VERSION}.jar"
     - name: Run Policy Scan
