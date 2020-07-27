@@ -40,6 +40,10 @@ jobs:
           args: -O https://downloads.veracode.com/securityscan/pipeline-scan-LATEST.zip
     - name: Unzip the Pipeline Scanner
       run: unzip pipeline-scan-LATEST.zip
+    - name: download warfile
+      uses: actions/download-artifact@v1
+      with:
+       name: Package
     - name: Create Baseline
       run: java -Dpipeline.debug=true -jar pipeline-scan.jar --veracode_api_id "${{secrets.VERACODE_API_ID}}" --veracode_api_key "${{secrets.VERACODE_API_KEY}}" --file "Package/verademo.war" --json_output_file="baseline.json" || true
     - name: Upload Baseline
