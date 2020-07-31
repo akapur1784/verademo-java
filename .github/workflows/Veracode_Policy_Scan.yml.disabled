@@ -34,7 +34,7 @@ jobs:
       run: java -jar veracode-wrapper.jar -vid ${{secrets.VERACODE_API_ID}} -vkey ${{secrets.VERACODE_API_KEY}}
         -action uploadandscan -appname "verademo-java" -filepath "target/verademo.war"
         -createprofile false -version "commit $GITHUB_SHA_SHORT workflow $GITHUB_WORKFLOW run $GITHUB_RUN_ID"
-        -sandboxname "github-actions" -createsandbox false -autoscan true
+        -sandboxname "github-actions" -createsandbox false -autoscan true   
     - name: after
       run: echo "complete"
   
