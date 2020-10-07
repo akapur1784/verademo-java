@@ -1,0 +1,74 @@
+---
+.prep: &prep
+  image: openjdk:11-jre
+  before_script:
+    - apt -qq update && apt -qq install jq -y
+    - VERACODE_WRAPPER_VERSION=$(curl -sS "https://search.maven.org/solrsearch/select?q=g:%22com.veracode.vosp.api.wrappers%22&rows=20&wt=json" | jq -r '.response.docs[0].latestVersion')
+      && curl -sS -o veracode-wrapper.jar "https://repo1.maven.org/maven2/com/veracode/vosp/api/wrappers/vosp-api-wrappers-java/${VERACODE_WRAPPER_VERSION}/vosp-api-wrappers-java-${VERACODE_WRAPPER_VERSION}.jar"
+
+stages:
+  - build
+  - scan
+
+maven:
+  stage: build
+  image: maven:3.6-jdk-11
+  script:
+    - mvn compile package
+  artifacts:
+    paths:
+      - target
+
+pipeline scan:
+  image: maven:3.6-jdk-11
+  stage: scan
+  dependencies:
+    - maven
+  only:
+    - development
+  except:
+    - schedules
+  artifacts:
+    name: ${CI_PROJECT_NAME}_${CI_COMMIT_REF_NAME}_${CI_COMMIT_SHA}_pipeline-results
+    paths:
+      - results.json
+    expire_in: 1 week
+    when: always
+  script:
+    - curl -O https://downloads.veracode.com/securityscan/pipeline-scan-LATEST.zip
+    - unzip pipeline-scan-LATEST.zip pipeline-scan.jar
+    - java -jar pipeline-scan.jar
+      --veracode_api_id "${VERACODE_API_KEY_ID}"
+      --veracode_api_key "${VERACODE_API_KEY_SECRET}"
+      --file "./target/verademo.war"
+      --project_name "${CI_PROJECT_PATH}"
+      --project_url "${CI_REPOSITORY_URL}"
+      --project_ref "${CI_COMMIT_REF_NAME}"
+      --fail_on_severity="Very High, High"
+      --timeout "${CI_TIMEOUT}"
+
+development-upload-for-sast:
+    stage: scan
+    only:
+      refs:
+        - development
+      variables:
+        - $SCHEDULE =~ /NIGHTLY/
+    <<: *prep
+    script:
+      - java -jar veracode-wrapper.jar -vid $VERACODE_API_KEY_ID -vkey $VERACODE_API_KEY_SECRET
+        -action uploadandscan -appname "Verademo-Brances" -filepath ./target/verademo.war
+        -createprofile false -version "commit $CI_COMMIT_SHORT_SHA pipeline $CI_PIPELINE_ID job $CI_JOB_ID"
+        -sandboxname "gitlab-development" -createsandbox true -autoscan true -scantimeout 15
+    allow_failure: true
+
+policy-upload-for-sast:
+    stage: scan
+    only:
+      - master
+    <<: *prep
+    script:
+      - java -jar veracode-wrapper.jar -vid $VERACODE_API_KEY_ID -vkey $VERACODE_API_KEY_SECRET
+        -action uploadandscan -appname "Verademo-Brances" -filepath ./target/verademo.war
+        -createprofile false -version "commit $CI_COMMIT_SHORT_SHA pipeline $CI_PIPELINE_ID job $CI_JOB_ID"
+        -autoscan true -scantimeout 15
