@@ -4,7 +4,7 @@ pipeline {
         stage('Build') {
             steps {
                 // Compile Java app
-                sh 'mvn clean package'
+                sh 'mvn install'
                 // pull docker container
                 //sh 'doker pull juliantotzek/verademo1-tomcat'
             }
