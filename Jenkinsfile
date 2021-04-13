@@ -1,19 +1,16 @@
 pipeline {
     agent any
+    tools {
+      
+      maven 'Maven 3.3.9'
+      jdk 'jdk8' 
+    }
+    
     stages {
         stage('Build') {
             steps {
-                script {
-                    if(isUnix()) {
-                        withMaven(maven: ‘Maven’) {
-                            sh label: ‘’, script: ‘mvn clean package’
-                        }
-                    } else {
-                        withMaven(maven: ‘Maven’) {
-                            bat label: ‘’, script: ‘mvn clean package’
-                        }
-                    }
-                }
+                sh 'mvn --version'
+                sh 'mvn clean package'
             }
         }
         stage('Security Scan Master Branch') {
