@@ -3,14 +3,17 @@ pipeline {
     stages {
         stage('Build') {
             steps {
-                // Compile Java app
-                sh 'export MAVEN_HOME=/usr/local/Cellar/maven/3.6.3/libexec'
-                sh 'export PATH=$PATH:$MAVEN_HOME/bin'
-                sh 'echo $PATH'
-                sh 'mvn --version'
-                sh 'mvn clean package'
-                // pull docker container
-                //sh 'doker pull juliantotzek/verademo1-tomcat'
+                script {
+                    if(isUnix()) {
+                        withMaven(maven: ‘Maven’) {
+                            sh label: ‘’, script: ‘mvn clean package’
+                        }
+                    } else {
+                        withMaven(maven: ‘Maven’) {
+                            bat label: ‘’, script: ‘mvn clean package’
+                        }
+                    }
+                }
             }
         }
         stage('Security Scan Master Branch') {
