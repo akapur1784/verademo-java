@@ -6,6 +6,7 @@ pipeline {
                 // Compile Java app
                 sh 'export MAVEN_HOME=/usr/local/Cellar/maven/3.6.3/libexec'
                 sh 'export PATH=$PATH:$MAVEN_HOME/bin'
+                sh 'echo $PATH'
                 sh 'mvn --version'
                 sh 'mvn clean package'
                 // pull docker container
