@@ -5,8 +5,8 @@ pipeline {
     stages {
         stage('Build') {
             steps {
-                sh 'export MAVEN_HOME=/usr/local/Cellar/maven/3.6.3/libexec'
-                sh '/usr/local/Cellar/maven/3.6.3/libexec/mvn clean package'
+               
+                sh '/usr/local/Cellar/maven/3.6.3/bin/mvn clean package'
             }
         }
         stage('Security Scan Master Branch') {
