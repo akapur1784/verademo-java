@@ -6,7 +6,6 @@ pipeline {
         stage('Build') {
             steps {
                 sh 'export MAVEN_HOME=/usr/local/Cellar/maven/3.6.3/libexec'
-                sh 'mvn --version'
                 sh '/usr/local/Cellar/maven/3.6.3/libexec/mvn clean package'
             }
         }
