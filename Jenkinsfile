@@ -1,8 +1,11 @@
 pipeline {
     agent any
+
+    
     stages {
         stage('Build') {
             steps {
+<<<<<<< HEAD
                 script {
                     if(isUnix()) {
                         withMaven(maven: ‘Maven’) {
@@ -14,6 +17,10 @@ pipeline {
                         }
                     }
                 }
+=======
+               
+                sh '/usr/local/Cellar/maven/3.6.3/bin/mvn clean package'
+>>>>>>> 1d47784abd32552f34fa083fc17364dc26121665
             }
         }
         stage('Security Scan Master Branch') {
