@@ -1,0 +1,30 @@
+name: Veracode Upload-and-Scan
+
+on:
+  workflow_dispatch
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up JDK 1.8
+      uses: actions/setup-java@v1
+      with:
+        java-version: 1.8
+    - name: Build with Maven
+      run: mvn -B package --file pom.xml
+    - uses: veracode/veracode-uploadandscan-action@master # Run the uploadandscan action. Inputs are described above.
+      with:
+        filepath: 'target/verademo.war'
+        vid: '${{ secrets.VERACODE_API_ID }}'
+        vkey: '${{ secrets.VERACODE_API_KEY }}'
+        createsandbox: false
+        sandboxname: 'github-actions'
+        scantimeout: 15
+        exclude: '*.js,*.jar,*.class,*.png,*.jpg,*.gif'
+        include: 'verademo.war'
+        appname: 'verademo-java'
+        createprofile: false
